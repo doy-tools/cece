@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maaf Cece Helma 💖</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: linear-gradient(135deg, #ffe6f0, #ffb3d1, #ffcce0);
+    background-size: 400% 400%;
+    animation: bgMove 10s ease infinite;
+    font-family: 'Comic Sans MS', 'Segoe UI', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+  @keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .card {
+    background: white;
+    padding: 35px 30px;
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(233, 30, 99, 0.3);
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+    animation: pop 0.8s ease;
+  }
+  @keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  h1 {
+    color: #e91e63;
+    font-size: 24px;
+    margin-bottom: 15px;
+  }
+  #pesan {
+    color: #555;
+    line-height: 1.8;
+    font-size: 15px;
+    min-height: 130px;
+    white-space: pre-line;
+  }
+  .btn {
+    background: #e91e63;
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 25px;
+    font-size: 15px;
+    cursor: pointer;
+    margin: 8px 5px 0;
+    font-family: inherit;
+    transition: 0.3s;
+  }
+  .btn:hover {
+    background: #c2185b;
+    transform: scale(1.05);
+  }
+  .btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  .emoji {
+    position: fixed;
+    top: -50px;
+    font-size: 24px;
+    animation: fall linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Maaf ya, Cece Helma 🥺</h1>
+    <p id="pesan"></p>
+    <button class="btn" id="btnMaaf">Aku Udah Maafin ❤️</button>
+    <button class="btn" id="btnBelum">Belum Maafin 😤</button>
+  </div>
+
+<script>
+  // ===== Pesan yang muncul satu per satu =====
+  const pesanArr = [
+    "Cece Helma...",
+    "Aku minta maaf ya 🙏",
+    "Aku sadar aku salah",
+    "Tolong jangan marah terus...",
+    "Aku janji gak ngulangin lagi 💖"
+  ];
+
+  const elPesan = document.getElementById("pesan");
+  let i = 0;
+
+  function tampilPesan() {
+    if (i < pesanArr.length) {
+      elPesan.textContent += pesanArr[i] + "\n";
+      i++;
+      setTimeout(tampilPesan, 900);
+    }
+  }
+  tampilPesan();
+
+  // ===== Tombol =====
+  const btnMaaf = document.getElementById("btnMaaf");
+  const btnBelum = document.getElementById("btnBelum");
+
+  btnMaaf.addEventListener("click", () => {
+    alert("Makasih udah maafin aku, Cece Helma 💖\nAku sayang kamu!");
+    btnMaaf.disabled = true;
+    btnBelum.disabled = true;
+    hujanEmoji(["💖","🌹","✨","💕","🌸"]);
+  });
+
+  btnBelum.addEventListener("click", () => {
+    alert("Yaudah, aku tunggu sampai kamu maafin ya Ce 🙏");
+    elPesan.textContent = "Aku tungguin terus sampai Cece maafin... 🥺\n";
+  });
+
+  // ===== Hujan emoji =====
+  function hujanEmoji(list) {
+    setInterval(() => {
+      const e = document.createElement("div");
+      e.className = "emoji";
+      e.textContent = list[Math.floor(Math.random() * list.length)];
+      e.style.left = Math.random() * 100 + "vw";
+      e.style.animationDuration = (3 + Math.random() * 3) + "s";
+      e.style.fontSize = (18 + Math.random() * 20) + "px";
+      document.body.appendChild(e);
+      setTimeout(() => e.remove(), 6000);
+    }, 250);
+  }
+
+  // Hujan emoji pelan dari awal
+  hujanEmoji(["💗","🌸","✨"]);
+</script>
+</body>
+</html>
