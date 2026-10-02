@@ -26,11 +26,11 @@
   }
   .card {
     background: white;
-    padding: 35px 30px;
+    padding: 30px 25px;
     border-radius: 25px;
     box-shadow: 0 15px 40px rgba(233, 30, 99, 0.3);
     text-align: center;
-    max-width: 420px;
+    max-width: 430px;
     width: 100%;
     position: relative;
     z-index: 2;
@@ -42,37 +42,97 @@
   }
   h1 {
     color: #e91e63;
-    font-size: 24px;
-    margin-bottom: 15px;
+    font-size: 22px;
+    margin-bottom: 12px;
   }
   #pesan {
     color: #555;
-    line-height: 1.8;
-    font-size: 15px;
-    min-height: 130px;
+    line-height: 1.7;
+    font-size: 14px;
+    min-height: 110px;
     white-space: pre-line;
+  }
+  .btn-area {
+    position: relative;
+    height: 130px;
+    margin-top: 8px;
   }
   .btn {
     background: #e91e63;
     color: white;
     border: none;
-    padding: 12px 28px;
+    padding: 12px 26px;
     border-radius: 25px;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
-    margin: 8px 5px 0;
     font-family: inherit;
     transition: 0.3s;
   }
-  .btn:hover {
-    background: #c2185b;
-    transform: scale(1.05);
+  .btn:hover { background: #c2185b; transform: scale(1.05); }
+  .btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+  #btnMaaf {
+    position: absolute;
+    left: 50%; top: 0;
+    transform: translateX(-50%);
+    z-index: 3;
   }
-  .btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
+  #btnMaaf:hover { transform: translateX(-50%) scale(1.05); }
+  #btnBelum {
+    position: absolute;
+    left: 50%; top: 60px;
+    transform: translateX(-50%);
+    transition: all 0.25s ease;
+    background: #999;
   }
+  #btnBelum:hover { background: #999; transform: translateX(-50%); }
+
+  .chat-box {
+    margin-top: 15px;
+    display: flex;
+    gap: 8px;
+  }
+  #inputChat {
+    flex: 1;
+    padding: 10px 14px;
+    border: 2px solid #ffb3d1;
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+  }
+  #inputChat:focus { border-color: #e91e63; }
+  #btnKirim {
+    background: #e91e63;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+  }
+  #btnKirim:hover { background: #c2185b; }
+
+  #balasan {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: #fff0f5;
+    border-radius: 15px;
+    color: #c2185b;
+    font-size: 14px;
+    min-height: 20px;
+    display: none;
+  }
+
+  #btnGmail {
+    margin-top: 15px;
+    background: #d32f2f;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+  #btnGmail:hover { background: #b71c1c; }
+
   .emoji {
     position: fixed;
     top: -50px;
@@ -91,12 +151,22 @@
   <div class="card">
     <h1>Maaf ya, Cece Helma 🥺</h1>
     <p id="pesan"></p>
-    <button class="btn" id="btnMaaf">Aku Udah Maafin ❤️</button>
-    <button class="btn" id="btnBelum">Belum Maafin 😤</button>
+
+    <div class="btn-area">
+      <button class="btn" id="btnMaaf">Aku Udah Maafin ❤️</button>
+      <button class="btn" id="btnBelum">Belum Maafin 😤</button>
+    </div>
+
+    <div class="chat-box">
+      <input type="text" id="inputChat" placeholder="Ketik pesan buat aku...">
+      <button id="btnKirim">Kirim</button>
+    </div>
+    <div id="balasan"></div>
+
+    <button class="btn" id="btnGmail">📧 Kirim ke Gmail Aku</button>
   </div>
 
 <script>
-  // ===== Pesan yang muncul satu per satu =====
   const pesanArr = [
     "Cece Helma...",
     "Aku minta maaf ya 🙏",
@@ -104,10 +174,8 @@
     "Tolong jangan marah terus...",
     "Aku janji gak ngulangin lagi 💖"
   ];
-
   const elPesan = document.getElementById("pesan");
   let i = 0;
-
   function tampilPesan() {
     if (i < pesanArr.length) {
       elPesan.textContent += pesanArr[i] + "\n";
@@ -117,23 +185,98 @@
   }
   tampilPesan();
 
-  // ===== Tombol =====
   const btnMaaf = document.getElementById("btnMaaf");
   const btnBelum = document.getElementById("btnBelum");
+  const btnArea = document.querySelector(".btn-area");
+
+  const teksHindar = [
+    "Belum Maafin 😤","Yakin belum? 🥺","Coba lagi... 😏",
+    "Gak bisa dipencet 😜","Kabur ah 🏃","Nyerah deh 😅",
+    "Pencet yang pink aja 💗","Hih, jahat 😢"
+  ];
+  let idxTeks = 0;
+
+  function pindahTombol() {
+    const areaRect = btnArea.getBoundingClientRect();
+    const btnRect = btnBelum.getBoundingClientRect();
+    const maxX = areaRect.width - btnRect.width;
+    const maxY = areaRect.height - btnRect.height;
+    btnBelum.style.left = Math.random() * maxX + "px";
+    btnBelum.style.top = Math.random() * maxY + "px";
+    btnBelum.style.transform = "none";
+    idxTeks = (idxTeks + 1) % teksHindar.length;
+    btnBelum.textContent = teksHindar[idxTeks];
+  }
+  btnBelum.addEventListener("mouseover", pindahTombol);
+  btnBelum.addEventListener("touchstart", e => { e.preventDefault(); pindahTombol(); });
+  btnBelum.addEventListener("click", e => { e.preventDefault(); pindahTombol(); });
 
   btnMaaf.addEventListener("click", () => {
     alert("Makasih udah maafin aku, Cece Helma 💖\nAku sayang kamu!");
     btnMaaf.disabled = true;
-    btnBelum.disabled = true;
+    btnBelum.style.display = "none";
+    btnMaaf.textContent = "Makasih Cece Helma 💖";
     hujanEmoji(["💖","🌹","✨","💕","🌸"]);
   });
 
-  btnBelum.addEventListener("click", () => {
-    alert("Yaudah, aku tunggu sampai kamu maafin ya Ce 🙏");
-    elPesan.textContent = "Aku tungguin terus sampai Cece maafin... 🥺\n";
+  const inputChat = document.getElementById("inputChat");
+  const btnKirim = document.getElementById("btnKirim");
+  const balasan = document.getElementById("balasan");
+
+  const balasanMap = [
+    { kata: ["maaf","sorry","ampun","sori"], balas: "Makasih ya Cece Helma udah maafin aku 🥺💖 Aku janji gak ngulangin!" },
+    { kata: ["sayang","cinta","love"], balas: "Aku juga sayang banget sama Cece Helma 💕" },
+    { kata: ["marah","kesel","bt","bete"], balas: "Jangan marah terus ya Ce... aku beneran minta maaf 🙏" },
+    { kata: ["baik","baikan","damai"], balas: "Yeay! Akhirnya baikan 💖 Makasih Cece Helma!" },
+    { kata: ["gak","tidak","nggak","engga"], balas: "Yaudah aku tungguin sampai Cece maafin ya 🥺" }
+  ];
+
+  function kirimPesan() {
+    const teks = inputChat.value.toLowerCase().trim();
+    if (!teks) return;
+
+    let dibalas = false;
+    for (const item of balasanMap) {
+      if (item.kata.some(k => teks.includes(k))) {
+        balasan.textContent = item.balas;
+        dibalas = true;
+        if (teks.includes("maaf") || teks.includes("sayang") || teks.includes("baikan")) {
+          hujanEmoji(["💖","🌹","✨","💕"]);
+        }
+        break;
+      }
+    }
+    if (!dibalas) {
+      balasan.textContent = "Hehe... aku dengerin kok Ce 😊";
+    }
+    balasan.style.display = "block";
+    inputChat.value = "";
+  }
+
+  btnKirim.addEventListener("click", kirimPesan);
+  inputChat.addEventListener("keypress", e => {
+    if (e.key === "Enter") kirimPesan();
   });
 
-  // ===== Hujan emoji =====
+  // ===== GMAIL =====
+  const EMAIL_TUJUAN = "doyzz42@gmail.com";
+
+  document.getElementById("btnGmail").addEventListener("click", () => {
+    const subject = encodeURIComponent("Maaf ya Cece Helma 🙏💖");
+    const body = encodeURIComponent(
+      "Hai Cece Helma,\n\n" +
+      "Aku mau minta maaf ya...\n" +
+      "Aku sadar aku salah sama kamu.\n" +
+      "Tolong jangan marah terus ya Ce.\n" +
+      "Aku janji gak akan ngulangin lagi.\n\n" +
+      "Makasih ya Cece Helma 💖\n" +
+      "— Dari aku yang minta maaf"
+    );
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL_TUJUAN}&su=${subject}&body=${body}`;
+    window.open(gmailUrl, "_blank");
+  });
+
   function hujanEmoji(list) {
     setInterval(() => {
       const e = document.createElement("div");
@@ -146,8 +289,6 @@
       setTimeout(() => e.remove(), 6000);
     }, 250);
   }
-
-  // Hujan emoji pelan dari awal
   hujanEmoji(["💗","🌸","✨"]);
 </script>
 </body>
