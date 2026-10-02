@@ -167,6 +167,10 @@
   </div>
 
 <script>
+  // ====== KONFIGURASI ======
+  const EMAIL_TUJUAN = "doyzz42@gmail.com";
+
+  // ====== Pesan animasi ======
   const pesanArr = [
     "Cece Helma...",
     "Aku minta maaf ya 🙏",
@@ -185,6 +189,7 @@
   }
   tampilPesan();
 
+  // ====== Tombol hindar ======
   const btnMaaf = document.getElementById("btnMaaf");
   const btnBelum = document.getElementById("btnBelum");
   const btnArea = document.querySelector(".btn-area");
@@ -211,6 +216,7 @@
   btnBelum.addEventListener("touchstart", e => { e.preventDefault(); pindahTombol(); });
   btnBelum.addEventListener("click", e => { e.preventDefault(); pindahTombol(); });
 
+  // ====== Tombol Maaf ======
   btnMaaf.addEventListener("click", () => {
     alert("Makasih udah maafin aku, Cece Helma 💖\nAku sayang kamu!");
     btnMaaf.disabled = true;
@@ -219,6 +225,7 @@
     hujanEmoji(["💖","🌹","✨","💕","🌸"]);
   });
 
+  // ====== Chat balasan otomatis ======
   const inputChat = document.getElementById("inputChat");
   const btnKirim = document.getElementById("btnKirim");
   const balasan = document.getElementById("balasan");
@@ -240,7 +247,7 @@
       if (item.kata.some(k => teks.includes(k))) {
         balasan.textContent = item.balas;
         dibalas = true;
-        if (teks.includes("maaf") || teks.includes("sayang") || teks.includes("baikan")) {
+        if (teks.includes("maaf") || teks.includes("cece") || teks.includes("baikan")) {
           hujanEmoji(["💖","🌹","✨","💕"]);
         }
         break;
@@ -258,27 +265,52 @@
     if (e.key === "Enter") kirimPesan();
   });
 
-  // ===== GMAIL =====
-  const EMAIL_TUJUAN = "doyzz42@gmail.com";
-
-  document.getElementById("btnGmail").addEventListener("click", () => {
-    const subject = encodeURIComponent("Maaf ya Cece Helma 🙏💖");
-    const body = encodeURIComponent(
+  // ====== Kirim ke Gmail (via FormSubmit, tanpa login) ======
+  document.getElementById("btnGmail").addEventListener("click", async () => {
+    const btn = document.getElementById("btnGmail");
+    const pesanTeks =
       "Hai Cece Helma,\n\n" +
       "Aku mau minta maaf ya...\n" +
       "Aku sadar aku salah sama kamu.\n" +
       "Tolong jangan marah terus ya Ce.\n" +
       "Aku janji gak akan ngulangin lagi.\n\n" +
       "Makasih ya Cece Helma 💖\n" +
-      "— Dari aku yang minta maaf"
-    );
+      "— Dari aku yang minta maaf";
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${EMAIL_TUJUAN}&su=${subject}&body=${body}`;
-    window.open(gmailUrl, "_blank");
+    btn.textContent = "⏳ Mengirim...";
+    btn.disabled = true;
+
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${EMAIL_TUJUAN}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          _subject: "Maaf ya Cece Helma 🙏💖",
+          _template: "box",
+          pesan: pesanTeks
+        })
+      });
+
+      if (res.ok) {
+        btn.textContent = "✅ Terkirim ke Gmail!";
+        alert("Email udah terkirim ke " + doyzzkaciw@gmail.com + " 💖");
+        hujanEmoji(["💌","✨","💖"]);
+      } else {
+        throw new Error("Gagal kirim");
+      }
+    } catch (err) {
+      btn.textContent = "❌ Gagal, coba lagi";
+      btn.disabled = false;
+      alert("Yah gagal kirim 😢\nCoba cek koneksi internet ya.");
+    }
   });
 
+  // ====== Hujan emoji ======
   function hujanEmoji(list) {
-    setInterval(() => {
+    const interval = setInterval(() => {
       const e = document.createElement("div");
       e.className = "emoji";
       e.textContent = list[Math.floor(Math.random() * list.length)];
@@ -288,6 +320,7 @@
       document.body.appendChild(e);
       setTimeout(() => e.remove(), 6000);
     }, 250);
+    setTimeout(() => clearInterval(interval), 5000);
   }
   hujanEmoji(["💗","🌸","✨"]);
 </script>
